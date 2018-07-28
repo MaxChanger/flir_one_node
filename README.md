@@ -19,4 +19,4 @@ At first, you should copy the rules`51-usb-flir-one.rules` to your computer `/et
 
    I modified the original author's code and used `applyColorMap` to add color to the thermal imaging grayscale.
 
-![2018-07-28 12-00-34屏幕截图](./img-readme/2018-07-28 12-00-34屏幕截图.png)
+![color](./img-readme/color.png)
