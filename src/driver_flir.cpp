@@ -120,9 +120,9 @@ namespace driver_flir
     }
 
     cv_bridge::CvImage out_msg;
-	cv::Mat im16 = cv::Mat (120, 160, CV_16UC1, pix);
+	  cv::Mat im16 = cv::Mat (120, 160, CV_16UC1, pix);
     out_msg.header.frame_id = camera_frame_;
-	out_msg.header.stamp = stamp;
+	  out_msg.header.stamp = stamp;
     out_msg.encoding = sensor_msgs::image_encodings::TYPE_16UC1; // Or whatever
     out_msg.image    = 	im16;
 
@@ -138,7 +138,8 @@ namespace driver_flir
 	
 	sensor_msgs::ImagePtr msg = cv_bridge::CvImage(header,"rgb8", decodedImage).toImageMsg();
 	msg->encoding = "rgb8" ;
-        image_rgb_pub_.publish(msg);
+  
+  image_rgb_pub_.publish(msg);
 
 
     // Max & Min value used for scaling
@@ -148,14 +149,31 @@ namespace driver_flir
 	int max = 3847; // <=>  40°C
 	int min = 2934; // <=>  20°C
 	int delta = max - min;
-	cv::Mat im8b = 255*(im16-min)/(max-min);
+	  
+    cv::Mat im8b = 255*(im16-min)/(max-min);
     im8b.convertTo(im8b , CV_8UC1);
-	cv_bridge::CvImage out_8b;
-    out_8b.header.frame_id = camera_frame_;
-	out_8b.header.stamp = stamp;
-    out_8b.encoding = sensor_msgs::image_encodings::TYPE_8UC1; // Or whatever
-    out_8b.image    =  im8b;
-	image_8b_pub_.publish(out_8b.toImageMsg());
+
+
+    cv::Mat im8bResized;
+    cv::resize(im8b, im8bResized, cv::Size(im8b.cols*4, im8b.rows*4), 0, 0, cv::INTER_LINEAR);
+	  
+    // cv_bridge::CvImage out_8b;
+    // out_8b.header.frame_id = camera_frame_;
+	  // out_8b.header.stamp = stamp;
+    // out_8b.encoding = sensor_msgs::image_encodings::TYPE_8UC1; // Or whatever
+    // out_8b.image    =  im8bResized;
+
+    cv::Mat im_color;
+    cv::applyColorMap(im8bResized, im_color, cv::COLORMAP_JET);
+
+    cv_bridge::CvImage out_8b_color;
+    out_8b_color.header.frame_id = camera_frame_;
+	  out_8b_color.header.stamp = stamp;
+    out_8b_color.encoding = sensor_msgs::image_encodings::BGR8; // Or whatever
+    out_8b_color.image    =  im_color;
+
+
+	image_8b_pub_.publish(out_8b_color.toImageMsg());
 
 
 
